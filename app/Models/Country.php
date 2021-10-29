@@ -12,7 +12,8 @@ class Country extends Model
     use SoftDeletes;
     
     protected $fillable = [
-        'nama'
+        'nama',
+        'flag_icon'
     ];
 
     protected $hidden = ["deleted_at"];

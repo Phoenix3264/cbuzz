@@ -13,52 +13,127 @@ class CountriesController extends Controller
         $data       = Country::get();
         $content    = 'Countries';
         $panel_name = 'Countries';
-        return view('content.backend.'.strtolower($content).'.data', compact('data', 'content', 'panel_name'));
+
+        return view('content.backend.'.strtolower($content).'.index', 
+                compact(
+                    'data', 
+                    'content', 
+                    'panel_name'
+                )
+            );
     }
 
     public function create()
     {
         $content    = 'Countries';
-        return view('content.backend.'.strtolower($content).'.create', compact('content'));
+        $panel_name = 'Countries';
+
+        return  view('content.backend.'.strtolower($content).'.create', 
+                compact(
+                    'content', 
+                    'panel_name'
+                )
+            );
     }
 
     public function store(Request $request)
     {
+        $content    = 'Countries';
+        
         $this->validate($request, [
             'nama'   => 'required'
         ]);
 
         $data = Country::create([
-            'nama'     => $request->nama
+            'nama'     => $request->nama,
+            'flag_icon'     => $request->flag_icon
         ]);
 
-        if($data){
-            //redirect dengan pesan sukses
+        if($data)
+        {
             return redirect()
-                ->route('Countries.index')
-                ->with(['success' => 'Data Berhasil Disimpan!']);
+                ->route($content.'.index')
+                ->with(['Success' => 'Data Berhasil Disimpan!']);
         }else{
-            //redirect dengan pesan error
             return redirect()
-                ->route('Countries.index')
-                ->with(['error' => 'Data Gagal Disimpan!']);
+                ->route($content.'.index')
+                ->with(['Error' => 'Data Gagal Disimpan!']);
         }
     }
 
-    public function show($countries_id)
+    public function edit(Country $Country)
     {
-        $data       = League::where('countries_id', $countries_id)
-                        ->get();
-
-        $content    = Country::where('id', $countries_id)->value('nama');
-
-        $panel_name = $content. ' Leagues';
-
-        return view('content.backend.leagues.data', 
+        $content    = 'Countries';
+        $panel_name = 'Countries';
+        
+        return  view('content.backend.'.strtolower($content).'.edit', 
                 compact(
-                    'data', 
-                    'panel_name', 
-                    'content'
-                ));
+                    'content', 
+                    'panel_name',
+                    'Country'
+                )
+            );
     }
+
+    public function update(Request $request, Country $Country)
+    {
+        $content    = 'Countries';
+
+        $this->validate($request, [
+            'nama'              => 'required',
+        ]);
+
+        $Country = Country::findOrFail($Country->id);
+
+        $Country->update([
+            'nama'              => $request->nama,
+            'flag_icon'              => $request->flag_icon,
+        ]);
+
+        if($Country)
+        {
+            return redirect()
+                ->route($content.'.index')
+                ->with(['Success' => 'Data Berhasil Disimpan!']);
+        }else{
+            return redirect()
+                ->route($content.'.index')
+                ->with(['Error' => 'Data Gagal Disimpan!']);
+        }
+    }
+
+    public function show(Country $Country)
+    {
+        $content    = 'Countries';
+        $panel_name = 'Countries';
+
+        
+        return  view('content.backend.'.strtolower($content).'.show', 
+                compact(
+                    'content', 
+                    'panel_name',
+                    'Country'
+                )
+            );
+    }
+
+    public function destroy($id)
+    {
+        $content    = 'Countries';
+        $panel_name = 'Countries';
+
+        $course = Country::findOrFail($id);
+        $course->delete();
+
+        if($course){        
+            return redirect()
+                ->route($content.'.index')
+                ->with(['Deleted' => 'Data successfully deleted!']);
+        }else{
+            return redirect()
+                ->route($content.'.index')
+                ->with(['Error' => 'Data Gagal Disimpan!']);
+        }
+    }
+
 }

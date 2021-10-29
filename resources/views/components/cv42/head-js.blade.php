@@ -1,0 +1,1 @@
+<script src="{{ asset('/cv42') }}/assets/plugins/pace/pace.min.js"></script>
